@@ -1,3 +1,12 @@
+/**
+ * This module contains functions to convert between WGS84 Lat Lon Alt
+ * and ECEF X Y Z coordinate systems.
+ *
+ * The fomulae are based on the paper, "Datum Transformations of GPS Positions"
+ * The PDF of the paper can be found here:
+ * http://www.nalresearch.com/files/Standard%20Modems/A3LA-XG/A3LA-XG%20SW%20Version%201.0.0/GPS%20Technical%20Documents/GPS.G1-X-00006%20(Datum%20Transformations).pdf
+ */
+
 import * as constants from "./constants";
 import * as utils from "./utils";
 
