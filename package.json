@@ -1,0 +1,30 @@
+{
+  "name": "ecef-utils",
+  "version": "1.0.0",
+  "description": "Package to convert coordinates and velocity vectors between Lat, Lon, Alt and Earth Centered Earth Fixed (ECEF) (X,Y,Z) coordinate systems.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "build:ts": "tsc",
+    "watch:ts": "onchange \"./src/*.ts\" -- run-s build:ts",
+    "watch": "run-p watch:*"
+  },
+  "keywords": [
+    "ECEF",
+    "WGS84",
+    "GIS"
+  ],
+  "author": "Kevin Mueller",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/arcgis-js-api": "^4.14.0",
+    "@types/chai": "^4.2.7",
+    "@types/mocha": "^5.2.7",
+    "chai": "^4.2.0",
+    "mocha": "^7.0.0",
+    "npm-run-all": "^4.1.5",
+    "onchange": "^6.1.0",
+    "ts-node": "^8.6.0",
+    "typescript": "^3.7.4"
+  }
+}
