@@ -35,6 +35,30 @@ export interface LLAPoint {
 }
 
 /**
+ * Vector structure for Earth Centered Earth Fixed velocity.
+ * vx is the x component of the velocity
+ * vy is the y component of the velocity
+ * vz is the z component of the velocity
+ */
+export interface ECEFVelocity {
+    vx: number,
+    vy: number,
+    vz: number
+}
+
+/**
+ * Vector structure for North East Down velocity.
+ * vn is the North component of the velocity
+ * ve is the East component of the velocity
+ * vd is the Down component of the velocity
+ */
+export interface NEDVelocity {
+    vn: number,
+    ve: number,
+    vd: number
+}
+
+/**
  * Projects a lat, lon, alt point to ECEF x, y, z coordinates
  *
  * @param {LLAPoint} llaPt
@@ -83,7 +107,15 @@ export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
     return llaPt;
 }
 
+export function ECEFVelocityToNED (ecefVel: ECEFVelocity): NEDVelocity {
+    return {vn: 0, ve: 0, vd: 0};
+}
+
+
+//*** Utility functions ***//
+
 function radiusOfCurvature(lat: number): number {
     const radiusOfCurvature = constants.RADIUS / Math.sqrt(1 - (Math.pow(constants.FIRST_ECCENTRICITY, 2) * Math.pow(Math.sin(lat), 2)));
     return radiusOfCurvature;
 }
+
