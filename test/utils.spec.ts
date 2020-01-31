@@ -46,4 +46,26 @@ describe("utils", () => {
             assert.equal(testDeg, 360.0);
         });
     });
+
+    describe('trimDecimalValue', () => {
+        it('should trim a decimal value to the given significant digits', () => {
+            const trimedValue = utils.trimDecimalValue(28394.2028437465, 3);
+            assert.equal(trimedValue, 28394.203);
+        });
+
+        it('should trim a decimal value to 0 significant digits', () => {
+            const trimedValue = utils.trimDecimalValue(28394.2028437465, 0);
+            assert.equal(trimedValue, 28394.0);
+        });
+
+        it('should trim a decimal value to 0 significant digits if significantDigits value is negative', () => {
+            const trimedValue = utils.trimDecimalValue(28394.2028437465, -3);
+            assert.equal(trimedValue, 28394.0);
+        });
+
+        it('should trim a decimal value to only integer significant digits', () => {
+            const trimedValue = utils.trimDecimalValue(28394.2028437465, 3.456);
+            assert.equal(trimedValue, 28394.203);
+        });
+    });
 });

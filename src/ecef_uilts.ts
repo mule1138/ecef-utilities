@@ -73,7 +73,11 @@ export function LLAToECEF(llaPt: LLAPoint): ECEFPoint {
     const y = (N + llaPt.alt) * Math.cos(latRad) * Math.sin(lonRad);
     const z = (N * (Math.pow(constants.POLAR_RADIUS, 2) / Math.pow(constants.RADIUS, 2)) + llaPt.alt) * Math.sin(latRad);
 
-    const ecefPt: ECEFPoint = { x: x, y: y, z: z };
+    const ecefPt: ECEFPoint = {
+        x: utils.trimDecimalValue(x, 2),
+        y: utils.trimDecimalValue(y, 2),
+        z: utils.trimDecimalValue(z, 2)
+    };
     return ecefPt;
 }
 
@@ -87,7 +91,8 @@ export function LLAToECEF(llaPt: LLAPoint): ECEFPoint {
  */
 export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
     // Calculate auxiliary values
-    const p = Math.sqrt((ecefPt.x * ecefPt.x) + (ecefPt.y * ecefPt.y));
+
+    const p = Math.hypot(ecefPt.x, ecefPt.y);;
     const theta = Math.atan((ecefPt.z * constants.RADIUS) / (p * constants.POLAR_RADIUS));
 
     // Calculate longitude
@@ -103,7 +108,11 @@ export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
     const alt = (p / Math.cos(latRad)) - N;
 
     // Convert lat and lon to degrees and return the LLA point
-    const llaPt: LLAPoint = { lat: utils.radToDeg(latRad), lon: utils.radToDeg(lonRad), alt: alt };
+    const llaPt: LLAPoint = {
+        lat: utils.trimDecimalValue(utils.radToDeg(latRad), 5),
+        lon: utils.trimDecimalValue(utils.radToDeg(lonRad), 5),
+        alt: utils.trimDecimalValue(alt, 2)
+    };
     return llaPt;
 }
 
@@ -146,7 +155,7 @@ export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVe
  * @returns the ground speed
  */
 export function getGroundSpeed(nedVel: NEDVelocity): number {
-    return Math.sqrt(Math.pow(nedVel.vn, 2) + Math.pow(nedVel.ve, 2));
+    return Math.hypot(nedVel.vn, nedVel.ve);
 }
 
 /**
@@ -168,8 +177,14 @@ export function getHeading(nedVel: NEDVelocity): number {
 
 //*** Utility functions ***//
 
-function radiusOfCurvature(lat: number): number {
-    const radiusOfCurvature = constants.RADIUS / Math.sqrt(1 - (Math.pow(constants.FIRST_ECCENTRICITY, 2) * Math.pow(Math.sin(lat), 2)));
+/**
+ * Calculates the radius of the ellipsoid at the given latitude in meters
+ *
+ * @param latRad Latitude of the point in radians
+ * @returns the radius of the ellipsoid at the latitiude in meters
+ */
+function radiusOfCurvature(latRad: number): number {
+    const radiusOfCurvature = constants.RADIUS / Math.sqrt(1 - (Math.pow(constants.FIRST_ECCENTRICITY, 2) * Math.pow(Math.sin(latRad), 2)));
     return radiusOfCurvature;
 }
 
