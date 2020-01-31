@@ -16,7 +16,7 @@ import * as utils from "./utils";
  * y is the y coordinate of the point in meters
  * z is the z coordinate of the point in meters
  */
-export interface ECEFPoint {
+export type ECEFPoint = {
     x: number,
     y: number,
     z: number
@@ -28,7 +28,7 @@ export interface ECEFPoint {
  * lon is the longitude of the point in degrees
  * alt is the height above the ellipsoid in meters
  */
-export interface LLAPoint {
+export type LLAPoint = {
     lat: number,
     lon: number,
     alt: number
@@ -40,7 +40,7 @@ export interface LLAPoint {
  * vy is the y component of the velocity
  * vz is the z component of the velocity
  */
-export interface ECEFVelocity {
+export type ECEFVelocity = {
     vx: number,
     vy: number,
     vz: number
@@ -52,7 +52,7 @@ export interface ECEFVelocity {
  * ve is the East component of the velocity
  * vd is the Down component of the velocity
  */
-export interface NEDVelocity {
+export type NEDVelocity = {
     vn: number,
     ve: number,
     vd: number
