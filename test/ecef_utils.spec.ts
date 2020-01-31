@@ -19,7 +19,6 @@ describe('ECEF_Utils', () => {
             const testECEFPt = {x:821905.34, y:-5553322.70, z:3017411.13};
 
             const llaPt = projector.ECEFToLLA(testECEFPt);
-            console.log(llaPt);
             assert.deepEqual(llaPt, testLLAPt);
         });
     });
