@@ -1,1 +1,2 @@
 # ECEFUtils
+This package contains functions to convert between Earth Centered Earth Fixed coordinates and Latitude, Longitude, Altitude coordinates. It also contains functions to project ECEF velocity vectors to North East Down (NED) velocity, and functions to determine heading and ground speed from the NED velocity.
