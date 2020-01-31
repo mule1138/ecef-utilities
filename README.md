@@ -29,7 +29,7 @@ This package contains functions to convert between Earth Centered Earth Fixed co
   * Rotates an ECEF vector to a North East Down vector
 * NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVelocity
   * Rotates a North East Down vector to an ECEF vector
-* groundSpeed(nedVel: NEDVelocity): number
+* getGroundSpeed(nedVel: NEDVelocity): number
   * Calculates ground speed from a NED vector
-* heading(nedVel: NEDVelocity): number
+* getHeading(nedVel: NEDVelocity): number
   * Calculates the heading for the NED vector. The heading will be in degrees from North in the range 0-360.

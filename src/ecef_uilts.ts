@@ -145,7 +145,7 @@ export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVe
  * @param nedVel The North East Down velocity vector
  * @returns the ground speed
  */
-export function groundSpeed(nedVel: NEDVelocity): number {
+export function getGroundSpeed(nedVel: NEDVelocity): number {
     return Math.sqrt(Math.pow(nedVel.vn, 2) + Math.pow(nedVel.ve, 2));
 }
 
@@ -155,7 +155,7 @@ export function groundSpeed(nedVel: NEDVelocity): number {
  * @param nedVel The North East Down velocity vector
  * @returns The heading in degrees from north in the range 0-360
  */
-export function heading(nedVel: NEDVelocity): number {
+export function getHeading(nedVel: NEDVelocity): number {
     const headingRad = Math.atan(nedVel.ve / nedVel.vn);
     let heading = utils.radToDeg(headingRad);
 
