@@ -107,10 +107,64 @@ export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
     return llaPt;
 }
 
-export function ECEFVelocityToNED (ecefVel: ECEFVelocity): NEDVelocity {
-    return {vn: 0, ve: 0, vd: 0};
+/**
+ * Rotates ECEF velocity components into North East Down components
+ *
+ * @param ecefVel Components of the ECEF velocity vector
+ * @param lat Latitude of the point
+ * @param lon Longitude of the point
+ */
+export function ECEFToNED(ecefVel: ECEFVelocity, lat: number, lon: number): NEDVelocity {
+    // Multiply the vector components by a Direction Cosine Matrix (DCM) to rotate the components to NED
+    const vn = -(ecefVel.vx * (Math.sin(lat) * Math.cos(lon))) - (ecefVel.vy * (Math.sin(lat) * Math.sin(lon))) + (ecefVel.vz * Math.cos(lat));
+    const ve = -(ecefVel.vx * Math.sin(lon)) + (ecefVel.vy * Math.cos(lon));
+    const vd = -(ecefVel.vx * (Math.cos(lat) * Math.cos(lon))) - (ecefVel.vy * (Math.cos(lat) * Math.sin(lon))) + (ecefVel.vz * Math.sin(lat));
+
+    return { vn: vn, ve: ve, vd: vd };
 }
 
+/**
+ * Rotates the North East Down velocity components into ECEF components
+ *
+ * @param nedVel Components of the NED velocity
+ * @param lat Latitude of the point
+ * @param lon Longitude of the point
+ */
+export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVelocity {
+    // Multiply the components by the transpose of the first DCM to rotate the components back to ECEF
+    const vx = -(nedVel.vn * (Math.sin(lat) * Math.cos(lon))) - (nedVel.ve * (Math.sin(lon))) - (nedVel.vd * (Math.cos(lat) * Math.cos(lon)));
+    const vy = -(nedVel.vn * (Math.sin(lat) * Math.sin(lon))) + (nedVel.ve * Math.cos(lon)) - (nedVel.vd * (Math.cos(lat) * Math.sin(lon)));
+    const vz = (nedVel.vn * Math.cos(lat)) - (nedVel.vd * Math.sin(lat));
+
+    return { vx: vx, vy: vy, vz: vz };
+}
+
+/**
+ * Calculate the ground speed of a given NED velocity
+ *
+ * @param nedVel The North East Down velocity vector
+ * @returns the ground speed
+ */
+export function groundSpeed(nedVel: NEDVelocity): number {
+    return Math.sqrt(Math.pow(nedVel.vn, 2) + Math.pow(nedVel.ve, 2));
+}
+
+/**
+ * Calculate the heading of a given NED velocity
+ *
+ * @param nedVel The North East Down velocity vector
+ * @returns The heading in degrees from north in the range 0-360
+ */
+export function heading(nedVel: NEDVelocity): number {
+    const headingRad = Math.atan(nedVel.ve / nedVel.vn);
+    let heading = utils.radToDeg(headingRad);
+
+    if (heading < 0) {
+        heading += 360;
+    }
+
+    return heading;
+}
 
 //*** Utility functions ***//
 
