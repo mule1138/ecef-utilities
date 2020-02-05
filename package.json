@@ -2,7 +2,12 @@
   "name": "ecef-utils",
   "version": "1.0.0",
   "description": "Package to convert coordinates and velocity vectors between Lat, Lon, Alt and Earth Centered Earth Fixed (ECEF) (X,Y,Z) coordinate systems.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "homepage": "https://github.com/mule1138/ECEFUtils#readme",
+  "bugs": {
+    "url": "https://github.com/mule1138/ECEFUtils/issues"
+  },
   "scripts": {
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "build:ts": "tsc",
@@ -16,8 +21,11 @@
   ],
   "author": "Kevin Mueller",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mule1138/ECEFUtils.git"
+  },
   "devDependencies": {
-    "@types/arcgis-js-api": "^4.14.0",
     "@types/chai": "^4.2.7",
     "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",

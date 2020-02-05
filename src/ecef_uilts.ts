@@ -142,7 +142,7 @@ export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVe
     const latRad = utils.degToRad(lat);
     const lonRad = utils.degToRad(lon);
 
-    // Multiply the components by the transpose of the first DCM to rotate the components back to ECEF
+    // Multiply the components by the transpose of the ECEFToNED DCM to rotate the components back to ECEF
     const vx = -(nedVel.vn * (Math.sin(latRad) * Math.cos(lonRad))) - (nedVel.ve * (Math.sin(lonRad))) - (nedVel.vd * (Math.cos(latRad) * Math.cos(lonRad)));
     const vy = -(nedVel.vn * (Math.sin(latRad) * Math.sin(lonRad))) + (nedVel.ve * Math.cos(lonRad)) - (nedVel.vd * (Math.cos(latRad) * Math.sin(lonRad)));
     const vz = (nedVel.vn * Math.cos(latRad)) - (nedVel.vd * Math.sin(latRad));

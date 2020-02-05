@@ -3,12 +3,14 @@
         "module": "commonjs",
         "outDir": "dist",
         "target": "ES6",
+        "declaration": true,
         "sourceMap": true
     },
     "include": [
         "src/**/*"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ]
 }
