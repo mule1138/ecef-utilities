@@ -16,7 +16,7 @@ import * as utils from "./utils";
  * y is the y coordinate of the point in meters
  * z is the z coordinate of the point in meters
  */
-export interface ECEFPoint {
+export type ECEFPoint = {
     x: number,
     y: number,
     z: number
@@ -28,7 +28,7 @@ export interface ECEFPoint {
  * lon is the longitude of the point in degrees
  * alt is the height above the ellipsoid in meters
  */
-export interface LLAPoint {
+export type LLAPoint = {
     lat: number,
     lon: number,
     alt: number
@@ -40,7 +40,7 @@ export interface LLAPoint {
  * vy is the y component of the velocity
  * vz is the z component of the velocity
  */
-export interface ECEFVelocity {
+export type ECEFVelocity = {
     vx: number,
     vy: number,
     vz: number
@@ -52,7 +52,7 @@ export interface ECEFVelocity {
  * ve is the East component of the velocity
  * vd is the Down component of the velocity
  */
-export interface NEDVelocity {
+export type NEDVelocity = {
     vn: number,
     ve: number,
     vd: number
@@ -87,7 +87,8 @@ export function LLAToECEF(llaPt: LLAPoint): ECEFPoint {
  */
 export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
     // Calculate auxiliary values
-    const p = Math.sqrt((ecefPt.x * ecefPt.x) + (ecefPt.y * ecefPt.y));
+
+    const p = Math.hypot(ecefPt.x, ecefPt.y);;
     const theta = Math.atan((ecefPt.z * constants.RADIUS) / (p * constants.POLAR_RADIUS));
 
     // Calculate longitude
@@ -103,7 +104,11 @@ export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
     const alt = (p / Math.cos(latRad)) - N;
 
     // Convert lat and lon to degrees and return the LLA point
-    const llaPt: LLAPoint = { lat: utils.radToDeg(latRad), lon: utils.radToDeg(lonRad), alt: alt };
+    const llaPt: LLAPoint = {
+        lat: utils.radToDeg(latRad),
+        lon: utils.radToDeg(lonRad),
+        alt: alt
+    };
     return llaPt;
 }
 
@@ -111,14 +116,17 @@ export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
  * Rotates ECEF velocity components into North East Down components
  *
  * @param ecefVel Components of the ECEF velocity vector
- * @param lat Latitude of the point
- * @param lon Longitude of the point
+ * @param lat Latitude of the point in degrees
+ * @param lon Longitude of the point in degrees
  */
 export function ECEFToNED(ecefVel: ECEFVelocity, lat: number, lon: number): NEDVelocity {
+    const latRad = utils.degToRad(lat);
+    const lonRad = utils.degToRad(lon);
+
     // Multiply the vector components by a Direction Cosine Matrix (DCM) to rotate the components to NED
-    const vn = -(ecefVel.vx * (Math.sin(lat) * Math.cos(lon))) - (ecefVel.vy * (Math.sin(lat) * Math.sin(lon))) + (ecefVel.vz * Math.cos(lat));
-    const ve = -(ecefVel.vx * Math.sin(lon)) + (ecefVel.vy * Math.cos(lon));
-    const vd = -(ecefVel.vx * (Math.cos(lat) * Math.cos(lon))) - (ecefVel.vy * (Math.cos(lat) * Math.sin(lon))) + (ecefVel.vz * Math.sin(lat));
+    const vn = (-ecefVel.vx * Math.sin(latRad) * Math.cos(lonRad)) - (ecefVel.vy * Math.sin(latRad) * Math.sin(lonRad)) + (ecefVel.vz * Math.cos(latRad));
+    const ve = (-ecefVel.vx * Math.sin(lonRad)) + (ecefVel.vy * Math.cos(lonRad));
+    const vd = (-ecefVel.vx * Math.cos(latRad) * Math.cos(lonRad)) - (ecefVel.vy * Math.cos(latRad) * Math.sin(lonRad)) - (ecefVel.vz * Math.sin(latRad));
 
     return { vn: vn, ve: ve, vd: vd };
 }
@@ -127,14 +135,17 @@ export function ECEFToNED(ecefVel: ECEFVelocity, lat: number, lon: number): NEDV
  * Rotates the North East Down velocity components into ECEF components
  *
  * @param nedVel Components of the NED velocity
- * @param lat Latitude of the point
- * @param lon Longitude of the point
+ * @param lat Latitude of the point in degrees
+ * @param lon Longitude of the point in degrees
  */
 export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVelocity {
+    const latRad = utils.degToRad(lat);
+    const lonRad = utils.degToRad(lon);
+
     // Multiply the components by the transpose of the first DCM to rotate the components back to ECEF
-    const vx = -(nedVel.vn * (Math.sin(lat) * Math.cos(lon))) - (nedVel.ve * (Math.sin(lon))) - (nedVel.vd * (Math.cos(lat) * Math.cos(lon)));
-    const vy = -(nedVel.vn * (Math.sin(lat) * Math.sin(lon))) + (nedVel.ve * Math.cos(lon)) - (nedVel.vd * (Math.cos(lat) * Math.sin(lon)));
-    const vz = (nedVel.vn * Math.cos(lat)) - (nedVel.vd * Math.sin(lat));
+    const vx = -(nedVel.vn * (Math.sin(latRad) * Math.cos(lonRad))) - (nedVel.ve * (Math.sin(lonRad))) - (nedVel.vd * (Math.cos(latRad) * Math.cos(lonRad)));
+    const vy = -(nedVel.vn * (Math.sin(latRad) * Math.sin(lonRad))) + (nedVel.ve * Math.cos(lonRad)) - (nedVel.vd * (Math.cos(latRad) * Math.sin(lonRad)));
+    const vz = (nedVel.vn * Math.cos(latRad)) - (nedVel.vd * Math.sin(latRad));
 
     return { vx: vx, vy: vy, vz: vz };
 }
@@ -145,8 +156,8 @@ export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVe
  * @param nedVel The North East Down velocity vector
  * @returns the ground speed
  */
-export function groundSpeed(nedVel: NEDVelocity): number {
-    return Math.sqrt(Math.pow(nedVel.vn, 2) + Math.pow(nedVel.ve, 2));
+export function getGroundSpeed(nedVel: NEDVelocity): number {
+    return Math.hypot(nedVel.vn, nedVel.ve);
 }
 
 /**
@@ -155,7 +166,7 @@ export function groundSpeed(nedVel: NEDVelocity): number {
  * @param nedVel The North East Down velocity vector
  * @returns The heading in degrees from north in the range 0-360
  */
-export function heading(nedVel: NEDVelocity): number {
+export function getHeading(nedVel: NEDVelocity): number {
     const headingRad = Math.atan(nedVel.ve / nedVel.vn);
     let heading = utils.radToDeg(headingRad);
 
@@ -168,8 +179,14 @@ export function heading(nedVel: NEDVelocity): number {
 
 //*** Utility functions ***//
 
-function radiusOfCurvature(lat: number): number {
-    const radiusOfCurvature = constants.RADIUS / Math.sqrt(1 - (Math.pow(constants.FIRST_ECCENTRICITY, 2) * Math.pow(Math.sin(lat), 2)));
+/**
+ * Calculates the radius of the WGS84 ellipsoid at the given latitude in meters
+ *
+ * @param latRad Latitude of the point in radians
+ * @returns the radius of the ellipsoid at the latitiude in meters
+ */
+function radiusOfCurvature(latRad: number): number {
+    const radiusOfCurvature = constants.RADIUS / Math.sqrt(1 - (Math.pow(constants.FIRST_ECCENTRICITY, 2) * Math.pow(Math.sin(latRad), 2)));
     return radiusOfCurvature;
 }
 
