@@ -1,4 +1,5 @@
 import * as projector from '../src/ecef_uilts';
+import {trimDecimalValue} from "../src/utils";
 import { assert } from 'chai';
 import 'mocha';
 
@@ -9,6 +10,9 @@ describe('ECEF_Utils', () => {
             const testECEFPt = {x:821905.3405, y:-5553322.6958, z:3017411.1335};
 
             const ecefPt = projector.LLAToECEF(testLLAPt);
+            ecefPt.x = trimDecimalValue(ecefPt.x, 4);
+            ecefPt.y = trimDecimalValue(ecefPt.y, 4);
+            ecefPt.z = trimDecimalValue(ecefPt.z, 4);
             assert.deepEqual(ecefPt, testECEFPt);
         });
     });
@@ -19,6 +23,9 @@ describe('ECEF_Utils', () => {
             const testECEFPt = {x:821905.34, y:-5553322.70, z:3017411.13};
 
             const llaPt = projector.ECEFToLLA(testECEFPt);
+            llaPt.lat = trimDecimalValue(llaPt.lat, 7);
+            llaPt.lon = trimDecimalValue(llaPt.lon, 7);
+            llaPt.alt = trimDecimalValue(llaPt.alt, 4);
             assert.deepEqual(llaPt, testLLAPt);
         });
     });
@@ -29,6 +36,9 @@ describe('ECEF_Utils', () => {
             const testECEFVel = {vx:82.34, vy:-554.45, vz:301.32};
 
             const nedVel = projector.ECEFToNED(testECEFVel, 28.4187, -81.5812);
+            nedVel.vn = trimDecimalValue(nedVel.vn, 4);
+            nedVel.ve = trimDecimalValue(nedVel.ve, 4);
+            nedVel.vd = trimDecimalValue(nedVel.vd, 4);
             assert.deepEqual(nedVel, testNEDVel);
         });
 
@@ -37,6 +47,9 @@ describe('ECEF_Utils', () => {
             const testECEFVel = {vx:0.0, vy:554.45, vz:0.0};
 
             const nedVel = projector.ECEFToNED(testECEFVel, 0.0, 0.0);
+            nedVel.vn = trimDecimalValue(nedVel.vn, 4);
+            nedVel.ve = trimDecimalValue(nedVel.ve, 4);
+            nedVel.vd = trimDecimalValue(nedVel.vd, 4);
             assert.deepEqual(nedVel, testNEDVel);
         });
 
@@ -45,6 +58,9 @@ describe('ECEF_Utils', () => {
             const testECEFVel = {vx:0.0, vy:0.0, vz:123.456};
 
             const nedVel = projector.ECEFToNED(testECEFVel, 0.0, 0.0);
+            nedVel.vn = trimDecimalValue(nedVel.vn, 4);
+            nedVel.ve = trimDecimalValue(nedVel.ve, 4);
+            nedVel.vd = trimDecimalValue(nedVel.vd, 4);
             assert.deepEqual(nedVel, testNEDVel);
         });
 
@@ -53,6 +69,9 @@ describe('ECEF_Utils', () => {
             const testECEFVel = {vx:-123.0, vy:0.0, vz:0.0};
 
             const nedVel = projector.ECEFToNED(testECEFVel, 0.0, 0.0);
+            nedVel.vn = trimDecimalValue(nedVel.vn, 4);
+            nedVel.ve = trimDecimalValue(nedVel.ve, 4);
+            nedVel.vd = trimDecimalValue(nedVel.vd, 4);
             assert.deepEqual(nedVel, testNEDVel);
         });
     });
@@ -63,6 +82,9 @@ describe('ECEF_Utils', () => {
             const testECEFVel = {vx:82.34, vy:-554.45, vz:301.32};
 
             const ecefVel = projector.NEDtoECEF(testNEDVel, 28.4187, -81.5812);
+            ecefVel.vx = trimDecimalValue(ecefVel.vx, 4);
+            ecefVel.vy = trimDecimalValue(ecefVel.vy, 4);
+            ecefVel.vz = trimDecimalValue(ecefVel.vz, 4);
             assert.deepEqual(ecefVel, testECEFVel);
         });
     });
@@ -71,7 +93,8 @@ describe('ECEF_Utils', () => {
         it('should calculate the ground speed for a given NED vector', () => {
             const testNEDVel = { vn: 34.39, ve: 123.876, vd: -636.3845};
 
-            const speed = projector.getGroundSpeed(testNEDVel);
+            let speed = projector.getGroundSpeed(testNEDVel);
+            speed = trimDecimalValue(speed, 4);
             assert.equal(speed, 128.561);
         });
     });
@@ -80,14 +103,16 @@ describe('ECEF_Utils', () => {
         it('should calculate a heading from a NED vector', () => {
             const testNEDVel = { vn: 34.39, ve: 123.876, vd: -636.3845};
 
-            const heading = projector.getHeading(testNEDVel);
+            let heading = projector.getHeading(testNEDVel);
+            heading = trimDecimalValue(heading, 4);
             assert.equal(heading, 74.4845);
         });
 
         it('should calculate a heading greater than 180 from a NED vector', () => {
             const testNEDVel = { vn: 34.39, ve: -123.876, vd: -636.3845};
 
-            const heading = projector.getHeading(testNEDVel);
+            let heading = projector.getHeading(testNEDVel);
+            heading = trimDecimalValue(heading, 4);
             assert.equal(heading, 285.5155);
         });
     });

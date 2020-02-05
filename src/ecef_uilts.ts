@@ -73,11 +73,7 @@ export function LLAToECEF(llaPt: LLAPoint): ECEFPoint {
     const y = (N + llaPt.alt) * Math.cos(latRad) * Math.sin(lonRad);
     const z = (N * (Math.pow(constants.POLAR_RADIUS, 2) / Math.pow(constants.RADIUS, 2)) + llaPt.alt) * Math.sin(latRad);
 
-    const ecefPt: ECEFPoint = {
-        x: utils.trimDecimalValue(x, 4),
-        y: utils.trimDecimalValue(y, 4),
-        z: utils.trimDecimalValue(z, 4)
-    };
+    const ecefPt: ECEFPoint = { x: x, y: y, z: z };
     return ecefPt;
 }
 
@@ -109,9 +105,9 @@ export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
 
     // Convert lat and lon to degrees and return the LLA point
     const llaPt: LLAPoint = {
-        lat: utils.trimDecimalValue(utils.radToDeg(latRad), 7),
-        lon: utils.trimDecimalValue(utils.radToDeg(lonRad), 7),
-        alt: utils.trimDecimalValue(alt, 4)
+        lat: utils.radToDeg(latRad),
+        lon: utils.radToDeg(lonRad),
+        alt: alt
     };
     return llaPt;
 }
@@ -132,7 +128,7 @@ export function ECEFToNED(ecefVel: ECEFVelocity, lat: number, lon: number): NEDV
     const ve = (-ecefVel.vx * Math.sin(lonRad)) + (ecefVel.vy * Math.cos(lonRad));
     const vd = (-ecefVel.vx * Math.cos(latRad) * Math.cos(lonRad)) - (ecefVel.vy * Math.cos(latRad) * Math.sin(lonRad)) - (ecefVel.vz * Math.sin(latRad));
 
-    return { vn: utils.trimDecimalValue(vn, 4), ve: utils.trimDecimalValue(ve, 4), vd: utils.trimDecimalValue(vd, 4) };
+    return { vn: vn, ve: ve, vd: vd };
 }
 
 /**
@@ -151,7 +147,7 @@ export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVe
     const vy = -(nedVel.vn * (Math.sin(latRad) * Math.sin(lonRad))) + (nedVel.ve * Math.cos(lonRad)) - (nedVel.vd * (Math.cos(latRad) * Math.sin(lonRad)));
     const vz = (nedVel.vn * Math.cos(latRad)) - (nedVel.vd * Math.sin(latRad));
 
-    return { vx: utils.trimDecimalValue(vx, 4), vy: utils.trimDecimalValue(vy, 4), vz: utils.trimDecimalValue(vz, 4) };
+    return { vx: vx, vy: vy, vz: vz };
 }
 
 /**
@@ -161,7 +157,7 @@ export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVe
  * @returns the ground speed
  */
 export function getGroundSpeed(nedVel: NEDVelocity): number {
-    return utils.trimDecimalValue(Math.hypot(nedVel.vn, nedVel.ve), 4);
+    return Math.hypot(nedVel.vn, nedVel.ve);
 }
 
 /**
@@ -178,7 +174,7 @@ export function getHeading(nedVel: NEDVelocity): number {
         heading += 360;
     }
 
-    return utils.trimDecimalValue(heading, 4);
+    return heading;
 }
 
 //*** Utility functions ***//
