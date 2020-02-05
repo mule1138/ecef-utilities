@@ -59,8 +59,19 @@ describe("utils", () => {
         });
 
         it('should trim a decimal value to 0 significant digits if significantDigits value is negative', () => {
-            const trimedValue = utils.trimDecimalValue(28394.2028437465, -3);
-            assert.equal(trimedValue, 28394.0);
+            let trimedValue = NaN
+            let didFail = false;
+
+            try {
+                trimedValue = utils.trimDecimalValue(28394.2028437465, -3);
+            }
+            catch (e) {
+                if (e instanceof RangeError) {
+                    didFail = true;
+                }
+            }
+
+            assert(didFail);
         });
 
         it('should trim a decimal value to only integer significant digits', () => {

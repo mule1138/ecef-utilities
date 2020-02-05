@@ -74,9 +74,9 @@ export function LLAToECEF(llaPt: LLAPoint): ECEFPoint {
     const z = (N * (Math.pow(constants.POLAR_RADIUS, 2) / Math.pow(constants.RADIUS, 2)) + llaPt.alt) * Math.sin(latRad);
 
     const ecefPt: ECEFPoint = {
-        x: utils.trimDecimalValue(x, 2),
-        y: utils.trimDecimalValue(y, 2),
-        z: utils.trimDecimalValue(z, 2)
+        x: utils.trimDecimalValue(x, 4),
+        y: utils.trimDecimalValue(y, 4),
+        z: utils.trimDecimalValue(z, 4)
     };
     return ecefPt;
 }
@@ -109,9 +109,9 @@ export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
 
     // Convert lat and lon to degrees and return the LLA point
     const llaPt: LLAPoint = {
-        lat: utils.trimDecimalValue(utils.radToDeg(latRad), 5),
-        lon: utils.trimDecimalValue(utils.radToDeg(lonRad), 5),
-        alt: utils.trimDecimalValue(alt, 2)
+        lat: utils.trimDecimalValue(utils.radToDeg(latRad), 7),
+        lon: utils.trimDecimalValue(utils.radToDeg(lonRad), 7),
+        alt: utils.trimDecimalValue(alt, 4)
     };
     return llaPt;
 }
