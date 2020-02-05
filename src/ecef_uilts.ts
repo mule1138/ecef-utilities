@@ -120,32 +120,38 @@ export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
  * Rotates ECEF velocity components into North East Down components
  *
  * @param ecefVel Components of the ECEF velocity vector
- * @param lat Latitude of the point
- * @param lon Longitude of the point
+ * @param lat Latitude of the point in degrees
+ * @param lon Longitude of the point in degrees
  */
 export function ECEFToNED(ecefVel: ECEFVelocity, lat: number, lon: number): NEDVelocity {
-    // Multiply the vector components by a Direction Cosine Matrix (DCM) to rotate the components to NED
-    const vn = -(ecefVel.vx * (Math.sin(lat) * Math.cos(lon))) - (ecefVel.vy * (Math.sin(lat) * Math.sin(lon))) + (ecefVel.vz * Math.cos(lat));
-    const ve = -(ecefVel.vx * Math.sin(lon)) + (ecefVel.vy * Math.cos(lon));
-    const vd = -(ecefVel.vx * (Math.cos(lat) * Math.cos(lon))) - (ecefVel.vy * (Math.cos(lat) * Math.sin(lon))) + (ecefVel.vz * Math.sin(lat));
+    const latRad = utils.degToRad(lat);
+    const lonRad = utils.degToRad(lon);
 
-    return { vn: vn, ve: ve, vd: vd };
+    // Multiply the vector components by a Direction Cosine Matrix (DCM) to rotate the components to NED
+    const vn = (-ecefVel.vx * Math.sin(latRad) * Math.cos(lonRad)) - (ecefVel.vy * Math.sin(latRad) * Math.sin(lonRad)) + (ecefVel.vz * Math.cos(latRad));
+    const ve = (-ecefVel.vx * Math.sin(lonRad)) + (ecefVel.vy * Math.cos(lonRad));
+    const vd = (-ecefVel.vx * Math.cos(latRad) * Math.cos(lonRad)) - (ecefVel.vy * Math.cos(latRad) * Math.sin(lonRad)) - (ecefVel.vz * Math.sin(latRad));
+
+    return { vn: utils.trimDecimalValue(vn, 4), ve: utils.trimDecimalValue(ve, 4), vd: utils.trimDecimalValue(vd, 4) };
 }
 
 /**
  * Rotates the North East Down velocity components into ECEF components
  *
  * @param nedVel Components of the NED velocity
- * @param lat Latitude of the point
- * @param lon Longitude of the point
+ * @param lat Latitude of the point in degrees
+ * @param lon Longitude of the point in degrees
  */
 export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVelocity {
-    // Multiply the components by the transpose of the first DCM to rotate the components back to ECEF
-    const vx = -(nedVel.vn * (Math.sin(lat) * Math.cos(lon))) - (nedVel.ve * (Math.sin(lon))) - (nedVel.vd * (Math.cos(lat) * Math.cos(lon)));
-    const vy = -(nedVel.vn * (Math.sin(lat) * Math.sin(lon))) + (nedVel.ve * Math.cos(lon)) - (nedVel.vd * (Math.cos(lat) * Math.sin(lon)));
-    const vz = (nedVel.vn * Math.cos(lat)) - (nedVel.vd * Math.sin(lat));
+    const latRad = utils.degToRad(lat);
+    const lonRad = utils.degToRad(lon);
 
-    return { vx: vx, vy: vy, vz: vz };
+    // Multiply the components by the transpose of the first DCM to rotate the components back to ECEF
+    const vx = -(nedVel.vn * (Math.sin(latRad) * Math.cos(lonRad))) - (nedVel.ve * (Math.sin(lonRad))) - (nedVel.vd * (Math.cos(latRad) * Math.cos(lonRad)));
+    const vy = -(nedVel.vn * (Math.sin(latRad) * Math.sin(lonRad))) + (nedVel.ve * Math.cos(lonRad)) - (nedVel.vd * (Math.cos(latRad) * Math.sin(lonRad)));
+    const vz = (nedVel.vn * Math.cos(latRad)) - (nedVel.vd * Math.sin(latRad));
+
+    return { vx: utils.trimDecimalValue(vx, 4), vy: utils.trimDecimalValue(vy, 4), vz: utils.trimDecimalValue(vz, 4) };
 }
 
 /**
@@ -178,7 +184,7 @@ export function getHeading(nedVel: NEDVelocity): number {
 //*** Utility functions ***//
 
 /**
- * Calculates the radius of the ellipsoid at the given latitude in meters
+ * Calculates the radius of the WGS84 ellipsoid at the given latitude in meters
  *
  * @param latRad Latitude of the point in radians
  * @returns the radius of the ellipsoid at the latitiude in meters
