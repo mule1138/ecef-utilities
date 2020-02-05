@@ -161,7 +161,7 @@ export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVe
  * @returns the ground speed
  */
 export function getGroundSpeed(nedVel: NEDVelocity): number {
-    return Math.hypot(nedVel.vn, nedVel.ve);
+    return utils.trimDecimalValue(Math.hypot(nedVel.vn, nedVel.ve), 4);
 }
 
 /**
@@ -178,7 +178,7 @@ export function getHeading(nedVel: NEDVelocity): number {
         heading += 360;
     }
 
-    return heading;
+    return utils.trimDecimalValue(heading, 4);
 }
 
 //*** Utility functions ***//

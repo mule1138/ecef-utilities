@@ -66,4 +66,29 @@ describe('ECEF_Utils', () => {
             assert.deepEqual(ecefVel, testECEFVel);
         });
     });
+
+    describe('getGroundSpeed', () => {
+        it('should calculate the ground speed for a given NED vector', () => {
+            const testNEDVel = { vn: 34.39, ve: 123.876, vd: -636.3845};
+
+            const speed = projector.getGroundSpeed(testNEDVel);
+            assert.equal(speed, 128.561);
+        });
+    });
+
+    describe('getHeading', () => {
+        it('should calculate a heading from a NED vector', () => {
+            const testNEDVel = { vn: 34.39, ve: 123.876, vd: -636.3845};
+
+            const heading = projector.getHeading(testNEDVel);
+            assert.equal(heading, 74.4845);
+        });
+
+        it('should calculate a heading greater than 180 from a NED vector', () => {
+            const testNEDVel = { vn: 34.39, ve: -123.876, vd: -636.3845};
+
+            const heading = projector.getHeading(testNEDVel);
+            assert.equal(heading, 285.5155);
+        });
+    });
 });
