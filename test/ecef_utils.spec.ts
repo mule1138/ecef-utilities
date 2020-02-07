@@ -5,9 +5,20 @@ import 'mocha';
 
 describe('ECEF_Utils', () => {
     describe('LLAToECEF', () => {
-        it('should reproject a LLA point as an ECEF point', () => {
+        it('should reproject a LLA point as an ECEF point on the surface', () => {
             const testLLAPt = { lat: 28.4187, lon: -81.5812, alt: 33.0 };
             const testECEFPt = {x:821905.3405, y:-5553322.6958, z:3017411.1335};
+
+            const ecefPt = projector.LLAToECEF(testLLAPt);
+            ecefPt.x = trimDecimalValue(ecefPt.x, 4);
+            ecefPt.y = trimDecimalValue(ecefPt.y, 4);
+            ecefPt.z = trimDecimalValue(ecefPt.z, 4);
+            assert.deepEqual(ecefPt, testECEFPt);
+        });
+
+        it('should reproject a LLA point as an ECEF point in LEO', () => {
+            const testLLAPt = { lat: 28.3734, lon: -81.5465, alt: 354056.0 };
+            const testECEFPt = {x:871411.1278, y:-5863295.2438, z:3181232.062};
 
             const ecefPt = projector.LLAToECEF(testLLAPt);
             ecefPt.x = trimDecimalValue(ecefPt.x, 4);
@@ -18,9 +29,20 @@ describe('ECEF_Utils', () => {
     });
 
     describe('ECEFToLLA', () => {
-        it('should reproject a LLA point as an ECEF point', () => {
+        it('should reproject a LLA point on the surface as an ECEF point', () => {
             const testLLAPt = { lat: 28.4187, lon: -81.5812, alt: 33.0019 };
             const testECEFPt = {x:821905.34, y:-5553322.70, z:3017411.13};
+
+            const llaPt = projector.ECEFToLLA(testECEFPt);
+            llaPt.lat = trimDecimalValue(llaPt.lat, 7);
+            llaPt.lon = trimDecimalValue(llaPt.lon, 7);
+            llaPt.alt = trimDecimalValue(llaPt.alt, 4);
+            assert.deepEqual(llaPt, testLLAPt);
+        });
+
+        it('should reproject a LLA point on in LEO as an ECEF point', () => {
+            const testLLAPt = { lat: 28.3734, lon: -81.5465, alt: 354056.0003 };
+            const testECEFPt = {x:871411.1278, y:-5863295.2438, z:3181232.062};
 
             const llaPt = projector.ECEFToLLA(testECEFPt);
             llaPt.lat = trimDecimalValue(llaPt.lat, 7);
