@@ -47,16 +47,29 @@ export type ECEFVelocity = {
 }
 
 /**
+ * Interface for tangent velocity types. Implemented in East North Up and North
+ * East Down types
+ */
+interface tanVelocity {
+    vn: number,
+    ve: number
+};
+
+/**
  * Vector structure for North East Down velocity.
  * vn is the North component of the velocity
  * ve is the East component of the velocity
  * vd is the Down component of the velocity
  */
-export type NEDVelocity = {
-    vn: number,
-    ve: number,
-    vd: number
-}
+export type NEDVelocity = tanVelocity & { vd: number };
+
+/**
+ * Vector structure for East North Up velocity.
+ * ve is the East component of the velocity
+ * vn is the North component of the velocity
+ * vu is the Up component of the velocity
+ */
+export type ENUVelocity = tanVelocity & { vu: number };
 
 /**
  * Projects a lat, lon, alt point to ECEF x, y, z coordinates
@@ -151,23 +164,61 @@ export function NEDtoECEF(nedVel: NEDVelocity, lat: number, lon: number): ECEFVe
 }
 
 /**
- * Calculate the ground speed of a given NED velocity
+ * Rotates ECEF velocity components into East North Up components
  *
- * @param nedVel The North East Down velocity vector
- * @returns the ground speed
+ * @param ecefVel Components of the ECEF velocity vector
+ * @param lat Latitude of the point in degrees
+ * @param lon Longitude of the point in degrees
  */
-export function getGroundSpeed(nedVel: NEDVelocity): number {
-    return Math.hypot(nedVel.vn, nedVel.ve);
+export function ECEFToENU(ecefVel: ECEFVelocity, lat: number, lon: number): ENUVelocity {
+    const latRad = utils.degToRad(lat);
+    const lonRad = utils.degToRad(lon);
+
+    // Multiply the vector components by a Direction Cosine Matrix (DCM) to rotate the components to NED
+    const ve = (-ecefVel.vx * Math.sin(lonRad)) + (ecefVel.vy * Math.cos(lonRad));
+    const vn = (-ecefVel.vx * Math.sin(latRad) * Math.cos(lonRad)) - (ecefVel.vy * Math.sin(latRad) * Math.sin(lonRad)) + (ecefVel.vz * Math.cos(latRad));
+    const vu = (ecefVel.vx * Math.cos(latRad) * Math.cos(lonRad)) + (ecefVel.vy * Math.cos(latRad) * Math.sin(lonRad)) + (ecefVel.vz * Math.sin(latRad));
+
+    return { vn: vn, ve: ve, vu: vu };
 }
 
 /**
- * Calculate the heading of a given NED velocity
+ * Rotates the East North Up velocity components into ECEF components
  *
- * @param nedVel The North East Down velocity vector
+ * @param enuVel Components of the ENU velocity
+ * @param lat Latitude of the point in degrees
+ * @param lon Longitude of the point in degrees
+ */
+export function ENUtoECEF(enuVel: ENUVelocity, lat: number, lon: number): ECEFVelocity {
+    const latRad = utils.degToRad(lat);
+    const lonRad = utils.degToRad(lon);
+
+    // Multiply the components by the transpose of the ECEFToENU DCM to rotate the components back to ECEF
+    const vx = (-enuVel.ve * Math.sin(lonRad)) - (enuVel.vn * Math.sin(latRad) * Math.cos(lonRad)) + (enuVel.vu * Math.cos(latRad) * Math.cos(lonRad));
+    const vy = (enuVel.ve * Math.cos(lonRad)) - (enuVel.vn * Math.sin(latRad) * Math.sin(lonRad)) + (enuVel.vu * Math.cos(latRad) * Math.sin(lonRad));
+    const vz = (enuVel.vn * Math.cos(latRad)) + (enuVel.vu * Math.sin(latRad));
+
+    return { vx: vx, vy: vy, vz: vz };
+}
+
+/**
+ * Calculate the ground speed of a given NED or ENU velocity
+ *
+ * @param tanVel The tangent plane velocity vector
+ * @returns the ground speed
+ */
+export function getGroundSpeed(tanVel: tanVelocity): number {
+    return Math.hypot(tanVel.vn, tanVel.ve);
+}
+
+/**
+ * Calculate the heading of a given NED or ENU velocity
+ *
+ * @param tanVel The tangent plane velocity vector
  * @returns The heading in degrees from north in the range 0-360
  */
-export function getHeading(nedVel: NEDVelocity): number {
-    const headingRad = Math.atan(nedVel.ve / nedVel.vn);
+export function getHeading(tanVel: tanVelocity): number {
+    const headingRad = Math.atan(tanVel.ve / tanVel.vn);
     let heading = utils.radToDeg(headingRad);
 
     if (heading < 0) {

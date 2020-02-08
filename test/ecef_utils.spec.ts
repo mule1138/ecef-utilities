@@ -111,6 +111,65 @@ describe('ECEF_Utils', () => {
         });
     });
 
+    describe('ECEFToENU', () => {
+        it('should reproject a ECEF vector as a ENU vector', () => {
+            const testENUVel = { vn: -1.7539, ve: 0.277, vu: 636.3845};
+            const testECEFVel = {vx:82.34, vy:-554.45, vz:301.32};
+
+            const enuVel = projector.ECEFToENU(testECEFVel, 28.4187, -81.5812);
+            enuVel.vn = trimDecimalValue(enuVel.vn, 4);
+            enuVel.ve = trimDecimalValue(enuVel.ve, 4);
+            enuVel.vu = trimDecimalValue(enuVel.vu, 4);
+            assert.deepEqual(enuVel, testENUVel);
+        });
+
+        it('should reproject a pure Y vector as East vector', () => {
+            const testENUVel = { vn: 0.0, ve: 554.45, vu: 0.0};
+            const testECEFVel = {vx:0.0, vy:554.45, vz:0.0};
+
+            const enuVel = projector.ECEFToENU(testECEFVel, 0.0, 0.0);
+            enuVel.vn = trimDecimalValue(enuVel.vn, 4);
+            enuVel.ve = trimDecimalValue(enuVel.ve, 4);
+            enuVel.vu = trimDecimalValue(enuVel.vu, 4);
+            assert.deepEqual(enuVel, testENUVel);
+        });
+
+        it('should reproject a pure Z vector as North vector', () => {
+            const testENUVel = { vn: 123.456, ve: 0.0, vu: 0.0};
+            const testECEFVel = {vx:0.0, vy:0.0, vz:123.456};
+
+            const enuVel = projector.ECEFToENU(testECEFVel, 0.0, 0.0);
+            enuVel.vn = trimDecimalValue(enuVel.vn, 4);
+            enuVel.ve = trimDecimalValue(enuVel.ve, 4);
+            enuVel.vu = trimDecimalValue(enuVel.vu, 4);
+            assert.deepEqual(enuVel, testENUVel);
+        });
+
+        it('should reproject a pure down vector', () => {
+            const testENUVel = { vn: 0.0, ve: 0.0, vu: -123};
+            const testECEFVel = {vx:-123.0, vy:0.0, vz:0.0};
+
+            const enuVel = projector.ECEFToENU(testECEFVel, 0.0, 0.0);
+            enuVel.vn = trimDecimalValue(enuVel.vn, 4);
+            enuVel.ve = trimDecimalValue(enuVel.ve, 4);
+            enuVel.vu = trimDecimalValue(enuVel.vu, 4);
+            assert.deepEqual(enuVel, testENUVel);
+        });
+    });
+
+    describe('ENUToECEF', () => {
+        it('should reproject a ENU vector as an ECEF vector', () => {
+            const testENUVel = { vn: -1.7539, ve: 0.277, vu: 636.3845};
+            const testECEFVel = {vx:82.34, vy:-554.45, vz:301.32};
+
+            const ecefVel = projector.ENUtoECEF(testENUVel, 28.4187, -81.5812);
+            ecefVel.vx = trimDecimalValue(ecefVel.vx, 4);
+            ecefVel.vy = trimDecimalValue(ecefVel.vy, 4);
+            ecefVel.vz = trimDecimalValue(ecefVel.vz, 4);
+            assert.deepEqual(ecefVel, testECEFVel);
+        });
+    });
+
     describe('getGroundSpeed', () => {
         it('should calculate the ground speed for a given NED vector', () => {
             const testNEDVel = { vn: 34.39, ve: 123.876, vd: -636.3845};
