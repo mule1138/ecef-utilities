@@ -2,8 +2,8 @@
  * This module contains functions to convert between WGS84 Lat Lon Alt
  * and ECEF X Y Z coordinate systems.
  *
- * The fomulae are based on the paper, "Datum Transformations of GPS Positions"
- * The PDF of the paper can be found here:
+ * The fomulae in this module are primarily based on the paper, "Datum
+ * Transformations of GPS Positions". The paper can be found here:
  * http://www.nalresearch.com/files/Standard%20Modems/A3LA-XG/A3LA-XG%20SW%20Version%201.0.0/GPS%20Technical%20Documents/GPS.G1-X-00006%20(Datum%20Transformations).pdf
  */
 
@@ -232,6 +232,13 @@ export function getHeading(tanVel: tanVelocity): number {
 
 /**
  * Calculates the radius of the WGS84 ellipsoid at the given latitude in meters
+ *
+ * This radius is the length of the line normal to the surface that intercepts
+ * the Z axis. For squashed ellipsoids like Earth, the intercept of a northern
+ * latitude is below the center of the Earth (-Z).
+ *
+ * See https://core.ac.uk/reader/36732690 for a more technical description of
+ * the different radii that can be used in geodesy.
  *
  * @param latRad Latitude of the point in radians
  * @returns the radius of the ellipsoid at the latitiude in meters
