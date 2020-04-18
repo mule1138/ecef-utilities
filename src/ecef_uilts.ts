@@ -101,7 +101,7 @@ export function LLAToECEF(llaPt: LLAPoint): ECEFPoint {
 export function ECEFToLLA(ecefPt: ECEFPoint): LLAPoint {
     // Calculate auxiliary values
 
-    const p = Math.hypot(ecefPt.x, ecefPt.y);;
+    const p = utils.hypot(ecefPt.x, ecefPt.y);;
     const theta = Math.atan((ecefPt.z * constants.RADIUS) / (p * constants.POLAR_RADIUS));
 
     // Calculate longitude
@@ -208,7 +208,7 @@ export function ENUtoECEF(enuVel: ENUVelocity, lat: number, lon: number): ECEFVe
  * @returns the ground speed
  */
 export function getGroundSpeed(tanVel: tanVelocity): number {
-    return Math.hypot(tanVel.vn, tanVel.ve);
+    return utils.hypot(tanVel.vn, tanVel.ve);
 }
 
 /**

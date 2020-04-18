@@ -79,4 +79,16 @@ describe("utils", () => {
             assert.equal(trimedValue, 28394.203);
         });
     });
+
+    describe('hypot', () => {
+        it('should calculate the hypotenuse of one value', () => {
+            const hypotVal = utils.hypot(3);
+            assert.equal(hypotVal, 3);
+        })
+
+        it('should calculate the hypotenuse of two values', () => {
+            const hypotVal = utils.hypot(3, 4);
+            assert.equal(hypotVal, 5);
+        })
+    });
 });
